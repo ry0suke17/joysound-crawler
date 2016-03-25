@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"bitbucket.org/yneee/exsongs/models"
-	"bitbucket.org/yneee/exsongs/settings"
+	"github.com/yneee/exsongs/models"
+	"github.com/yneee/exsongs/settings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"

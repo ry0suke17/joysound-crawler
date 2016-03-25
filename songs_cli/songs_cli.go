@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/yneee/exsongs/models"
-	"bitbucket.org/yneee/exsongs/settings"
-	"bitbucket.org/yneee/exsongs/utils"
+	"github.com/yneee/exsongs/models"
+	"github.com/yneee/exsongs/settings"
+	"github.com/yneee/exsongs/utils"
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
