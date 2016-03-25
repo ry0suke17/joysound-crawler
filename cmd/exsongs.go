@@ -208,7 +208,7 @@ func crawlFailedPage() {
 				}
 			}
 
-			time.Sleep(700 * time.Millisecond)
+			time.Sleep(1200 * time.Millisecond)
 		}
 
 		log.Println("end id:", endID)
