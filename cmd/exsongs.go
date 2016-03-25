@@ -138,7 +138,7 @@ func crawl() {
 			break
 		}
 
-		time.Sleep(700 * time.Millisecond)
+		time.Sleep(1200 * time.Millisecond)
 
 		pageNumber++
 	}
