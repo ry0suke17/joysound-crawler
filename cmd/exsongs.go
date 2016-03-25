@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yneee/exsongs/models"
-	"github.com/yneee/exsongs/settings"
-	"github.com/yneee/exsongs/utils"
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/yneee/exsongs/models"
+	"github.com/yneee/exsongs/settings"
+	"github.com/yneee/exsongs/utils"
 )
 
 var (
@@ -41,6 +41,14 @@ func init() {
 	}
 
 	db = _db
+}
+
+func migrate() {
+	db.Set("gorm:table_options", "ENGINE=InnoDB")
+
+	db.AutoMigrate(&models.Log{})
+	db.AutoMigrate(&models.Song{})
+	db.AutoMigrate(&models.FailedPage{})
 }
 
 func crawl() {

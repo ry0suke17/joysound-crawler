@@ -28,13 +28,13 @@ golang:
     - ~/docker/golang1.5:/go
   command: >
     bash -c "
-    go get -v -u github.com/go-sql-driver/mysql &&
-    go get -v -u github.com/jinzhu/gorm &&
-    go get -v -u github.com/PuerkitoBio/goquery &&
-    go get -v -u golang.org/x/crypto/bcrypt &&
-    go get -v -u golang.org/x/text/encoding/japanese &&
-    go get -v -u golang.org/x/text/transform &&
-    go get -v -u github.com/yneee/exsongs
+    go get -v github.com/go-sql-driver/mysql &&
+    go get -v github.com/jinzhu/gorm &&
+    go get -v github.com/PuerkitoBio/goquery &&
+    go get -v golang.org/x/crypto/bcrypt &&
+    go get -v golang.org/x/text/encoding/japanese &&
+    go get -v golang.org/x/text/transform &&
+    go get -v github.com/yneee/exsongs
     go run src/github.com/yneee/exsongs/migrate_cli/migrate_cli.go &&
     go run src/github.com/yneee/exsongs/songs_cli/songs_cli.go
     "
