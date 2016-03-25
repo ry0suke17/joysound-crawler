@@ -17,6 +17,7 @@ mysql:
     - MYSQL_DATABASE=exsongs
   volumes:
     - ~/docker/mysql5.7:/var/lib/mysql
+  command: --character-set-server=utf8
 
 golang:
   hostname: golang
