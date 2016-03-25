@@ -34,6 +34,7 @@ golang:
     go get -v -u golang.org/x/crypto/bcrypt &&
     go get -v -u golang.org/x/text/encoding/japanese &&
     go get -v -u golang.org/x/text/transform &&
+    go get -v -u github.com/yneee/exsongs
     go run src/github.com/yneee/exsongs/migrate_cli/migrate_cli.go &&
     go run src/github.com/yneee/exsongs/songs_cli/songs_cli.go
     "
