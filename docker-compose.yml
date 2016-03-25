@@ -1,0 +1,39 @@
+# at centos6.7
+
+splash:
+  hostname: splash
+  image: scrapinghub/splash
+  ports:
+    - "5023:5023"
+    - "8050:8050"
+    - "8051:8051"
+
+mysql:
+  image: mysql:latest
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_ROOT_PASSWORD=rooT555_
+    - MYSQL_DATABASE=exsongs
+  volumes:
+    - ~/docker/mysql:/var/lib/mysql
+
+golang:
+  hostname: golang
+  image: golang:1.5
+  links:
+    - splash
+    - mysql
+  volumes:
+    - ~/docker/golang:/go
+  command: >
+    bash -c "
+    go get -v -u github.com/go-sql-driver/mysql &&
+    go get -v -u github.com/jinzhu/gorm &&
+    go get -v -u github.com/PuerkitoBio/goquery &&
+    go get -v -u golang.org/x/crypto/bcrypt &&
+    go get -v -u golang.org/x/text/encoding/japanese &&
+    go get -v -u golang.org/x/text/transform &&
+    go run src/bitbucket.org/yneee/exsongs/migrate_cli/migrate_cli.go &&
+    go run src/bitbucket.org/yneee/exsongs/songs_cli/songs_cli.go
+    "
