@@ -22,8 +22,19 @@ var (
 	mode    = flag.String("mode", "crawl", "mode. select 'crawl' or 'crawl-failed-page'.")
 )
 
+func init() {
+	_db, err := gorm.Open("mysql", settings.DbInfo)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	db = _db
+}
+
 func main() {
 	flag.Parse()
+
+	migrate()
 
 	switch *mode {
 	case "crawl":
@@ -32,15 +43,6 @@ func main() {
 		crawlFailedPage()
 	}
 
-}
-
-func init() {
-	_db, err := gorm.Open("mysql", settings.DbInfo)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	db = _db
 }
 
 func migrate() {
