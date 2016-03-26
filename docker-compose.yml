@@ -1,8 +1,7 @@
 # at centos6.7
 
 splash:
-  hostname: splash
-  image: scrapinghub/splash
+  image: scrapinghub/splash:latest
   ports:
     - "5023:5023"
     - "8050:8050"
@@ -19,20 +18,24 @@ mysql:
     - ~/docker/mysql5.7:/var/lib/mysql
   command: --character-set-server=utf8
 
+mecab:
+  image: bungoume/mecab-web-api:latest
+  ports:
+    - "8000:8000"
+
 golang:
-  hostname: golang
   image: golang:1.5
   links:
     - splash
     - mysql
+    - mecab
   volumes:
     - ~/docker/golang1.5:/go
   entrypoint: ""
   command: >
     bash -c "
     go get -v github.com/yneee/exsongs/cmd &&
-    cd src/github.com/yneee/exsongs/cmd &&
+    cd /go/src/github.com/yneee/exsongs/cmd &&
     go get . &&
-    cd /go &&
-    go run src/github.com/yneee/exsongs/cmd/exsongs.go
+    go run /go/src/github.com/yneee/exsongs/cmd/exsongs.go
     "
