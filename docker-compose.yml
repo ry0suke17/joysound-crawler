@@ -18,17 +18,23 @@ mysql:
     - ~/docker/mysql5.7:/var/lib/mysql
   command: --character-set-server=utf8
 
-mecab:
-  image: bungoume/mecab-web-api:latest
+# need install plugins.
+# docker exec exsongs_elasticsearch_1 /usr/share/elasticsearch/bin/plugin install analysis-kuromoji
+elasticsearch:
+  image: elasticsearch:2.1
   ports:
-    - "8000:8000"
+    - "9200:9200"
+    - "9300:9300"
+  volumes:
+    - ~/docker/elasticsearch2.1/data:/usr/share/elasticsearch/data
+    - ~/docker/elasticsearch2.1/plugins:/usr/share/elasticsearch/plugins
 
 golang:
   image: golang:1.5
   links:
     - splash
     - mysql
-    - mecab
+    - elasticsearch
   volumes:
     - ~/docker/golang1.5:/go
   entrypoint: ""

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -35,6 +36,7 @@ func main() {
 	flag.Parse()
 
 	migrate()
+	setElasticsearch()
 
 	switch *mode {
 	case "crawl":
@@ -42,7 +44,22 @@ func main() {
 	case "crawl-failed-page":
 		crawlFailedPage()
 	}
+}
 
+func setElasticsearch() {
+	reader := strings.NewReader(settings.ElasticsearchSettings)
+	request, err := http.NewRequest("PUT", "http://elasticsearch:9200/kuromoji_sample/", reader)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Println(response)
 }
 
 func migrate() {
