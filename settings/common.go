@@ -7,6 +7,12 @@ const (
 	//SplashInfo SplashInfo
 	SplashInfo = "http://splash:8050/render.html"
 
+	//ElasticsearchInfo ElasticsearchInfo
+	ElasticsearchInfo = "http://elasticsearch:9200"
+
+	//SongsInfo SongsInfo
+	SongsInfo = "https://www.joysound.com/web/search/song/"
+
 	//ElasticsearchSettings ElasticsearchSettings
 	ElasticsearchSettings = `
 {

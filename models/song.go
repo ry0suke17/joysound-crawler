@@ -2,18 +2,26 @@ package models
 
 //Song 曲モデル
 type Song struct {
-	ID              uint
-	PageNumber      uint
-	ArtistName      string
-	LyricWriterName string
-	SongWriterName  string
-	Name            string
-	Number          string
-	OriginalKey     string
-	DeliveryStatus  string
-	ModelNames      string
-	Lyric           string `gorm:"type:text"`
-	DeliveryTerm    string
+	ID               uint
+	PageNumber       uint
+	ArtistName       string
+	ArtistNameR      string
+	ArtistNameK      string
+	LyricWriterName  string
+	LyricWriterNameK string
+	LyricWriterNameR string
+	SongWriterName   string
+	SongWriterNameK  string
+	SongWriterNameR  string
+	Name             string
+	NameK            string
+	NameR            string
+	Number           string
+	OriginalKey      string
+	DeliveryStatus   string
+	ModelNames       string
+	Lyric            string `gorm:"type:text"`
+	DeliveryTerm     string
 }
 
 //CanCreate 登録できるかチェック

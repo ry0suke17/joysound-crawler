@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -18,9 +21,8 @@ import (
 )
 
 var (
-	baseURL = "https://www.joysound.com/web/search/song/"
-	db      *gorm.DB
-	mode    = flag.String("mode", "crawl", "mode. select 'crawl' or 'crawl-failed-page'.")
+	db   *gorm.DB
+	mode = flag.String("mode", "crawl", "mode. select 'crawl' or 'crawl-failed-page'.")
 )
 
 func init() {
@@ -30,13 +32,13 @@ func init() {
 	}
 
 	db = _db
+
+	initElasticsearch()
+	migrate()
 }
 
 func main() {
 	flag.Parse()
-
-	migrate()
-	setElasticsearch()
 
 	switch *mode {
 	case "crawl":
@@ -46,9 +48,9 @@ func main() {
 	}
 }
 
-func setElasticsearch() {
+func initElasticsearch() {
 	reader := strings.NewReader(settings.ElasticsearchSettings)
-	request, err := http.NewRequest("PUT", "http://elasticsearch:9200/kuromoji_sample/", reader)
+	request, err := http.NewRequest("PUT", settings.ElasticsearchInfo+"/kuromoji_sample", reader)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -59,7 +61,7 @@ func setElasticsearch() {
 		log.Fatalln(err)
 	}
 
-	log.Println(response)
+	response.Body.Close()
 }
 
 func migrate() {
@@ -243,16 +245,37 @@ func getSongs(doc *goquery.Document) []models.Song {
 	artistName, lyricWriterName, songWriterName := getSongRelationName(doc)
 	lyric := getLyric(doc)
 
+	artistNameK, _ := getReading(artistName, "katakana")
+	lyricWriterNameK, _ := getReading(lyricWriterName, "katakana")
+	songWriterNameK, _ := getReading(songWriterName, "katakana")
+
+	artistNameR, _ := getReading(artistName, "romaji")
+	lyricWriterNameR, _ := getReading(lyricWriterName, "romaji")
+	songWriterNameR, _ := getReading(songWriterName, "romaji")
+
 	doc.Find(".jp-cmp-karaoke-list-001 > ul > li").Each(func(i int, s *goquery.Selection) {
 		song := models.Song{}
 
 		song.ArtistName = artistName
 		song.LyricWriterName = lyricWriterName
 		song.SongWriterName = songWriterName
+
+		song.ArtistNameK = artistNameK
+		song.LyricWriterNameK = lyricWriterNameK
+		song.SongWriterNameK = songWriterNameK
+
+		song.ArtistNameR = artistNameR
+		song.LyricWriterNameR = lyricWriterNameR
+		song.SongWriterNameR = songWriterNameR
+
 		song.Lyric = lyric
 
 		//曲名
 		song.Name = trim(s.Find(".jp-cmp-karaoke-details > h4").Text())
+		songNameK, _ := getReading(song.Name, "katakana")
+		songNameR, _ := getReading(song.Name, "romaji")
+		song.NameK = songNameK
+		song.NameR = songNameR
 
 		//曲番号等
 		s.Find(".jp-cmp-karaoke-details > .jp-cmp-movie-status-001 > dl").Children().Each(func(i int, _s *goquery.Selection) {
@@ -320,11 +343,62 @@ func getSongRelationName(doc *goquery.Document) (string, string, string) {
 	return artistName, lyricWriterName, songWriterName
 }
 
+func getReading(text string, mode string) (string, error) {
+	analyzer := ""
+
+	switch mode {
+	case "katakana":
+		analyzer = "katakana_analyzer"
+	case "romaji":
+		analyzer = "romaji_analyzer"
+	}
+
+	if mode == "" {
+		return "", errors.New("exsongs: none mode")
+	}
+
+	url := []string{
+		settings.ElasticsearchInfo,
+		"/kuromoji_sample/_analyze",
+		"?analyzer=" + analyzer,
+	}
+
+	reader := strings.NewReader(text)
+	request, err := http.NewRequest("PUT", strings.Join(url, ""), reader)
+	if err != nil {
+		return "", err
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return "", err
+	}
+
+	type token struct {
+		token string
+	}
+
+	type tokens struct {
+		tokens []token
+	}
+
+	byteArray, _ := ioutil.ReadAll(response.Body)
+
+	t := tokens{}
+
+	if err = json.Unmarshal(byteArray, &t); err != nil {
+		return "", err
+	}
+
+	return t.tokens[0].token, nil
+}
+
 func getDoc(pageNum uint) (*goquery.Document, error) {
 	url := []string{
 		settings.SplashInfo,
 		"?url=",
-		"https://www.joysound.com/web/search/song/",
+		settings.SongsInfo,
 		strconv.Itoa(int(pageNum)),
 		"&images=0",
 	}
