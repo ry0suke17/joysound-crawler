@@ -37,11 +37,6 @@ golang:
     - elasticsearch
   volumes:
     - ~/docker/golang1.5:/go
+    - .:/go/src/github.com/yneee/exsongs
   entrypoint: ""
-  command: >
-    bash -c "
-    go get -v github.com/yneee/exsongs/cmd &&
-    cd /go/src/github.com/yneee/exsongs/cmd &&
-    go get . &&
-    go run /go/src/github.com/yneee/exsongs/cmd/exsongs.go
-    "
+  command: go run /go/src/github.com/yneee/exsongs/cmd/exsongs.go

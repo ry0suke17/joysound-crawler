@@ -34,7 +34,23 @@ func (m *Song) CanCreate() bool {
 		return false
 	}
 
+	if m.ArtistNameK == "" {
+		return false
+	}
+
+	if m.ArtistNameR == "" {
+		return false
+	}
+
 	if m.Name == "" {
+		return false
+	}
+
+	if m.NameK == "" {
+		return false
+	}
+
+	if m.NameR == "" {
 		return false
 	}
 

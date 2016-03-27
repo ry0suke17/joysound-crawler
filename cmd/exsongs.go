@@ -364,7 +364,7 @@ func getReading(text string, mode string) (string, error) {
 	}
 
 	reader := strings.NewReader(text)
-	request, err := http.NewRequest("PUT", strings.Join(url, ""), reader)
+	request, err := http.NewRequest("GET", strings.Join(url, ""), reader)
 	if err != nil {
 		return "", err
 	}
@@ -376,11 +376,15 @@ func getReading(text string, mode string) (string, error) {
 	}
 
 	type token struct {
-		token string
+		Token       string `json:"token"`
+		StartOffset uint   `json:"start_offset"`
+		EndOffset   uint   `json:"end_offset"`
+		Type        string `json:"type"`
+		Position    uint   `json:"position"`
 	}
 
 	type tokens struct {
-		tokens []token
+		Tokens []token `json:"tokens"`
 	}
 
 	byteArray, _ := ioutil.ReadAll(response.Body)
@@ -391,7 +395,12 @@ func getReading(text string, mode string) (string, error) {
 		return "", err
 	}
 
-	return t.tokens[0].token, nil
+	ret := []string{}
+	for _, token := range t.Tokens {
+		ret = append(ret, utils.KatakanaToHiragana(token.Token))
+	}
+
+	return strings.Join(ret, " "), nil
 }
 
 func getDoc(pageNum uint) (*goquery.Document, error) {
