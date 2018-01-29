@@ -2,7 +2,7 @@
 
 JOYSOUNDの曲を収集するクローラー
 
-##　起動
+## 実行
 
 ```
 docker-compose up
